@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorChatGPT", "BlazorChatGPT\BlazorChatGPT.csproj", "{50B302C9-D0C3-440F-9D95-DC390D0134EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamsChatBot", "TeamsChatBot\TeamsChatBot.csproj", "{496D4B8C-E610-4354-8A15-23F3CFD32E0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureOpenAI.Helpers", "AzureOpenAI.Models\AzureOpenAI.Helpers.csproj", "{E79DB405-8F92-4E89-B24B-70FD22C1BCAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50B302C9-D0C3-440F-9D95-DC390D0134EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50B302C9-D0C3-440F-9D95-DC390D0134EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50B302C9-D0C3-440F-9D95-DC390D0134EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50B302C9-D0C3-440F-9D95-DC390D0134EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{496D4B8C-E610-4354-8A15-23F3CFD32E0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{496D4B8C-E610-4354-8A15-23F3CFD32E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{496D4B8C-E610-4354-8A15-23F3CFD32E0B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{496D4B8C-E610-4354-8A15-23F3CFD32E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{496D4B8C-E610-4354-8A15-23F3CFD32E0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{496D4B8C-E610-4354-8A15-23F3CFD32E0B}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E79DB405-8F92-4E89-B24B-70FD22C1BCAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E79DB405-8F92-4E89-B24B-70FD22C1BCAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E79DB405-8F92-4E89-B24B-70FD22C1BCAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E79DB405-8F92-4E89-B24B-70FD22C1BCAC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {52050469-E9EE-44BC-B4F8-E2F478DF2581}
+	EndGlobalSection
+EndGlobal

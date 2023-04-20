@@ -1,0 +1,72 @@
+﻿@page "/chat"
+@using AzureOpenAI.Helpers.Models;
+@inject IConfiguration configuration;
+
+<h3>ChatGPT</h3>
+
+@foreach (var chatMessage in messages)
+{
+    <div><strong>Role:</strong> @chatMessage.role</div>
+    <div><strong>Message:</strong> @chatMessage.content</div>
+    <hr />
+}
+
+@if (isLoading)
+{
+    <p>
+        <strong>Waiting for a response...</strong>
+    </p>
+}
+
+<p>
+    <div>Type your message:</div>
+    <div><textarea rows="5" cols="100" @bind="@message" /></div>
+
+    <button @onclick="() => SendMessageAsync()">
+        Send
+    </button>
+</p>
+
+
+@code {
+    private string message;
+    private List<Message> messages = new List<Message>();
+    private bool isLoading;
+
+    public async Task SendMessageAsync()
+    {
+        string uri = configuration["AzureOpenAIUrl"];
+        string apiKey = configuration["AzureOpenAIKey"];
+
+        AzureOpenAIRequest request = new AzureOpenAIRequest();
+        request.messages.Add(new Message { role = "system", content = "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible." });
+
+        Message newMessage = new Message
+            {
+                content = message,
+                role = "user"
+            };
+
+        messages.Add(newMessage);
+
+        message = string.Empty;
+
+        foreach (var chatMessage in messages)
+        {
+            request.messages.Add(chatMessage);
+        }
+
+        HttpClient client = new HttpClient();
+        client.DefaultRequestHeaders.Add("api-key", apiKey);
+
+        isLoading = true;
+
+        var response = await client.PostAsJsonAsync<AzureOpenAIRequest>(uri, request);
+        var azureOpenAIResponse = await response.Content.ReadFromJsonAsync<AzureOpenAIResponse>();
+
+        isLoading = false;
+
+        messages.Add(azureOpenAIResponse.choices.FirstOrDefault().message);
+
+    }
+}
