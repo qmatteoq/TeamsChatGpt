@@ -1,6 +1,8 @@
 ﻿@page "/chat"
 @using AzureOpenAI.Helpers.Models;
 @using Microsoft.SemanticKernel;
+@using Microsoft.SemanticKernel.AI.ChatCompletion;
+@using Microsoft.SemanticKernel.Connectors.AI.OpenAI.ChatCompletion;
 @using Microsoft.SemanticKernel.Orchestration;
 @using Microsoft.SemanticKernel.SemanticFunctions;
 @inject IConfiguration configuration;
@@ -35,10 +37,8 @@
     private string message;
     private List<Message> messages = new List<Message>();
     private bool isLoading;
-    private IKernel kernel;
-    private string history;
-    private ISKFunction chatFunction;
-    private ContextVariables context;
+    private OpenAIChatHistory chat;
+    private IChatCompletion chatGpt;
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,51 +46,23 @@
         string deploymentName = configuration["AzureOpenAI:DeploymentName"];
         string endpoint = configuration["AzureOpenAI:Endpoint"];
 
-        kernel = Kernel.Builder.Build();
+        var kernel = Kernel.Builder.Build();
         kernel.Config.AddAzureChatCompletionService("chatgpt-azure", deploymentName, endpoint, apiKey, true);
+        chatGpt = kernel.GetService<IChatCompletion>();
 
-        history = string.Empty;
+        var systemMessage = @"You are an AI assistant that helps users answering their questions. Answer in a concise way. If you don't know the answer, don't try to guess, just say you don't know it.";
 
-        var prompt = @"You are an AI assistant that helps users answering their questions. Answer in a concise way. If you don't know the answer, don't try to guess, just say you don't know it.
-                      {{$history}}
-
-                      User: {{$input}}
-                      ChatBot: ";
-
-        var promptConfig = new PromptTemplateConfig
-        {
-            Completion =
-            {
-                MaxTokens = 2000,
-                Temperature = 0.7,
-                TopP = 0.5,
-            }
-        };
-
-        var promptTemplate = new PromptTemplate(prompt, promptConfig, kernel);
-        var functionConfig = new SemanticFunctionConfig(promptConfig, promptTemplate);
-        chatFunction = kernel.RegisterSemanticFunction("ChatBot", "Chat", functionConfig);
-
-        context = new ContextVariables();
+        chat = (OpenAIChatHistory)chatGpt.CreateNewChat(systemMessage);
     }
 
     public async Task SendMessageAsync()
     {
-        messages.Add(new Message { content = message });
-        var response = await Chat(message);
-        messages.Add(new Message { content = response });
-    }
-
-    private async Task<string> Chat(string input)
-    {
-        context.Set("input", input);
-
-        // Process the user message and get an answer
-        var answer = await kernel.RunAsync(context, chatFunction);
-
-        // Append the new interaction to the chat history
-        history += $"\nHuman: {input}\nChatBot: {answer}\n";
-        context.Set("history", history);
-        return answer.Result;
+        messages.Add(new Message { role = "user", content = message });
+        chat.AddUserMessage(message);
+        isLoading = true;
+        var reply = await chatGpt.GenerateMessageAsync(chat, new ChatRequestSettings());
+        isLoading = false;
+        chat.AddAssistantMessage(reply);
+        messages.Add(new Message { role = "assistant", content = reply });
     }
 }
