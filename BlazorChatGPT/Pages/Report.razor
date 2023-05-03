@@ -1,0 +1,63 @@
+﻿@page "/report"
+
+@using Microsoft.SemanticKernel;
+@using Microsoft.SemanticKernel.AI.ChatCompletion;
+@using Microsoft.SemanticKernel.Connectors.AI.OpenAI.ChatCompletion;
+@using Microsoft.SemanticKernel.KernelExtensions;
+@using Microsoft.SemanticKernel.Orchestration;
+@using Microsoft.SemanticKernel.SemanticFunctions;
+@inject IConfiguration configuration;
+
+<h3>Report</h3>
+
+<div>Customer:</div>
+<div><textarea rows="5" cols="100" @bind="@customer" /></div>
+
+<div>Problem:</div>
+<div><textarea rows="5" cols="100" @bind="@problem" /></div>
+
+<div>Solution:</div>
+<div><textarea rows="5" cols="100" @bind="@solution" /></div>
+
+<div>Report:</div>
+<p class="markup">@((MarkupString)report)</p>
+
+<button @onclick="() => GenerateBusinessMailAsync()">
+    Send
+</button>
+
+
+@code {
+
+    private string customer;
+    private string problem;
+    private string solution;
+    private string report;
+
+    public async Task GenerateBusinessMailAsync()
+    {
+        string apiKey = configuration["AzureOpenAI:ApiKey"];
+        string deploymentName = configuration["AzureOpenAI:DeploymentName"];
+        string endpoint = configuration["AzureOpenAI:Endpoint"];
+
+        var kernel = Kernel.Builder.Build();
+        kernel.Config.AddAzureChatCompletionService("chatgpt-azure", deploymentName, endpoint, apiKey, true);
+
+        var skill = kernel.ImportSemanticSkillFromDirectory("Skills", "GeneratorSkill");
+        var context = new ContextVariables();
+        context.Set("customer", customer);
+        context.Set("problem", problem);
+        context.Set("solution", solution);
+
+        var result = await kernel.RunAsync(context, skill["ReportGeneratorFunction"]);
+
+        if (!result.ErrorOccurred)
+        {
+            report = result.Result;
+        }
+        else
+        {
+            report = result.LastErrorDescription;
+        }
+    }
+}

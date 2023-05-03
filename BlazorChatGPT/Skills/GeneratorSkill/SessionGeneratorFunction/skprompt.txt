@@ -1,0 +1,10 @@
+﻿Generate a title and an abstract for submitting a presentation for a technical conference. Generate the output as a HTML list, with the following format:
+
+- Title (make it bold): {title} 
+- Abstract (make it bold): {abstract}
+
+Use the following tone: {{$tone}}
+
+The topic of the presentation is defined in the following text enclosed between triple backticks:
+
+Topic: ```{{$topic}}```

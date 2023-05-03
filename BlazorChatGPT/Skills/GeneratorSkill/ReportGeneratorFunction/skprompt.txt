@@ -1,0 +1,16 @@
+﻿Generate a business report based on the following information:
+
+- Customer name: {{$customer}}
+- Problem statement: {{$problem}}
+- Solution: {{$solution}}
+
+Structure the report using the following sections:
+
+- Customer
+- Problem
+- Solution
+
+Prefix each section with its name in bold. For each section, expand the information included at the beginning, with maximum 100 words for each section.
+Make sure to include the following information about the customer as a paragraph, if they're available: type of industry, size of the company, number of countries in which it operates. 
+
+Generate the report using HTML.
