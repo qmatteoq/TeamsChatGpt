@@ -1,14 +1,15 @@
 ﻿@page "/report"
 
-@using Microsoft.SemanticKernel;
-@using Microsoft.SemanticKernel.AI.ChatCompletion;
-@using Microsoft.SemanticKernel.Connectors.AI.OpenAI.ChatCompletion;
-@using Microsoft.SemanticKernel.KernelExtensions;
-@using Microsoft.SemanticKernel.Orchestration;
-@using Microsoft.SemanticKernel.SemanticFunctions;
-@inject IConfiguration configuration;
+@using BlazorChatGPT.Services;
+@inject IOpenAiService openAiService;
 
 <h3>Report</h3>
+
+<div>Choose your API service:</div>
+<select name="apiService" id="apiService" @bind="@apiService">
+    <option value="openai">OpenAI</option>
+    <option value="azureopenai">Azure OpenAI</option>
+</select>
 
 <div>Customer:</div>
 <div><textarea rows="5" cols="100" @bind="@customer" /></div>
@@ -22,9 +23,16 @@
 <div>Report:</div>
 <p class="markup">@((MarkupString)report)</p>
 
-<button @onclick="() => GenerateBusinessMailAsync()">
+<button @onclick="() => GenerateReportAsync()">
     Send
 </button>
+
+@if (isLoading)
+{
+    <p>
+        <strong>Waiting for a response...</strong>
+    </p>
+}
 
 
 @code {
@@ -33,31 +41,22 @@
     private string problem;
     private string solution;
     private string report;
+    private string apiService;
+    private bool isLoading;
 
-    public async Task GenerateBusinessMailAsync()
+    public async Task GenerateReportAsync()
     {
-        string apiKey = configuration["AzureOpenAI:ApiKey"];
-        string deploymentName = configuration["AzureOpenAI:DeploymentName"];
-        string endpoint = configuration["AzureOpenAI:Endpoint"];
-
-        var kernel = Kernel.Builder.Build();
-        kernel.Config.AddAzureChatCompletionService("chatgpt-azure", deploymentName, endpoint, apiKey, true);
-
-        var skill = kernel.ImportSemanticSkillFromDirectory("Skills", "GeneratorSkill");
-        var context = new ContextVariables();
-        context.Set("customer", customer);
-        context.Set("problem", problem);
-        context.Set("solution", solution);
-
-        var result = await kernel.RunAsync(context, skill["ReportGeneratorFunction"]);
-
-        if (!result.ErrorOccurred)
+        if (apiService == "openai")
         {
-            report = result.Result;
+            openAiService.UseOpenAI();
         }
         else
         {
-            report = result.LastErrorDescription;
+            openAiService.UseAzureOpenAI();
         }
+
+        isLoading = true;
+        report = await openAiService.GenerateBusinessReportAsync(customer, problem, solution);
+        isLoading = false;
     }
 }

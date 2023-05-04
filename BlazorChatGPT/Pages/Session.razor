@@ -1,14 +1,15 @@
 ﻿@page "/session"
 
-@using Microsoft.SemanticKernel;
-@using Microsoft.SemanticKernel.AI.ChatCompletion;
-@using Microsoft.SemanticKernel.Connectors.AI.OpenAI.ChatCompletion;
-@using Microsoft.SemanticKernel.KernelExtensions;
-@using Microsoft.SemanticKernel.Orchestration;
-@using Microsoft.SemanticKernel.SemanticFunctions;
-@inject IConfiguration configuration;
+@using BlazorChatGPT.Services;
+@inject IOpenAiService openAiService;
 
 <h3>Session</h3>
+
+<div>Choose your API service:</div>
+<select name="apiService" id="apiService" @bind="@apiService">
+    <option value="openai">OpenAI</option>
+    <option value="azureopenai">Azure OpenAI</option>
+</select>
 
 <div>Describe the topic of your session:</div>
 <div><textarea rows="5" cols="100" @bind="@topic" /></div>
@@ -22,6 +23,13 @@
     Send
 </button>
 
+@if (isLoading)
+{
+    <p>
+        <strong>Waiting for a response...</strong>
+    </p>
+}
+
 <p class="markup">@((MarkupString)output)</p>
 
 @code {
@@ -29,30 +37,23 @@
     private string topic;
     private string output;
     private string tone;
+    private string apiService;
+    private bool isLoading;
 
     public async Task GenerateBusinessMailAsync()
     {
-        string apiKey = configuration["AzureOpenAI:ApiKey"];
-        string deploymentName = configuration["AzureOpenAI:DeploymentName"];
-        string endpoint = configuration["AzureOpenAI:Endpoint"];
-
-        var kernel = Kernel.Builder.Build();
-        kernel.Config.AddAzureChatCompletionService("chatgpt-azure", deploymentName, endpoint, apiKey, true);
-
-        var skill = kernel.ImportSemanticSkillFromDirectory("Skills", "GeneratorSkill");
-        var context = new ContextVariables();
-        context.Set("topic", topic);
-        context.Set("tone", tone);
-
-        var result = await kernel.RunAsync(context, skill["SessionGeneratorFunction"]);
-
-        if (!result.ErrorOccurred)
+        if (apiService == "openai")
         {
-            output = result.Result;
+            openAiService.UseOpenAI();
         }
         else
         {
-            output = result.LastErrorDescription;
+            openAiService.UseAzureOpenAI();
         }
+
+        isLoading = true;
+        output = await openAiService.GenerateSessionAsync(topic, tone);
+        isLoading = false;
+
     }
 }
