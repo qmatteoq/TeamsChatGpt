@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "type": "completion",
-  "description": "a function that generates business mails",
+  "description": "a function that can answer questions about the Star Wars universe",
   "completion": {
     "max_tokens": 1000,
-    "temperature": 0.0,
+    "temperature": 0.3,
     "top_p": 0.0,
     "presence_penalty": 0.0,
     "frequency_penalty": 0.0
@@ -13,7 +13,7 @@
     "parameters": [
       {
         "name": "input",
-        "description": "The text to convert into a business mail",
+        "description": "A Star Wars character",
         "defaultValue": ""
       }
     ]

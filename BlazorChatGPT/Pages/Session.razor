@@ -5,19 +5,28 @@
 
 <h3>Session</h3>
 
-<div>Choose your API service:</div>
-<select name="apiService" id="apiService" @bind="@apiService">
+<div>API service:</div>
+<InputSelect @bind-Value="apiService">
+    <option value="">Select your AI service</option>
     <option value="openai">OpenAI</option>
     <option value="azureopenai">Azure OpenAI</option>
-</select>
+</InputSelect>
+
+<div>Execution:</div>
+<InputSelect @bind-Value="execution">
+    <option value="">Select your execution plan</option>
+    <option value="inline">Inline</option>
+    <option value="skill">Skill</option>
+    <option value="chain">Chain</option>
+</InputSelect>
 
 <div>Describe the topic of your session:</div>
 <div><textarea rows="5" cols="100" @bind="@topic" /></div>
 
-<select name="style" id="cars" @bind="@tone">
+<InputSelect name="style" id="cars"@bind-Value="tone">
     <option value="professional">Professional</option>
     <option value="fun">Fun</option>
-</select>
+</InputSelect>
 
 <button @onclick="() => GenerateBusinessMailAsync()">
     Send
@@ -39,6 +48,7 @@
     private string tone;
     private string apiService;
     private bool isLoading;
+    private string execution;
 
     public async Task GenerateBusinessMailAsync()
     {
@@ -51,9 +61,22 @@
             openAiService.UseAzureOpenAI();
         }
 
+        output = string.Empty;
         isLoading = true;
-        output = await openAiService.GenerateSessionAsync(topic, tone);
-        isLoading = false;
 
+        switch(execution)
+        {
+            case "inline":
+                output = await openAiService.GenerateSessionInlineAsync(topic, tone);
+                break;
+            case "skill":
+                output = await openAiService.GenerateSessionAsync(topic, tone);
+                break;
+            case "chain":
+                output = await openAiService.GenerateTranslatedSessionAsync(topic, tone);
+                break;
+        }
+
+        isLoading = false;
     }
 }

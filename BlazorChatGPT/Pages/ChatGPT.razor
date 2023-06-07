@@ -46,8 +46,9 @@
         string deploymentName = configuration["AzureOpenAI:DeploymentName"];
         string endpoint = configuration["AzureOpenAI:Endpoint"];
 
-        var kernel = Kernel.Builder.Build();
-        kernel.Config.AddAzureChatCompletionService("chatgpt-azure", deploymentName, endpoint, apiKey, true);
+        var builder = new KernelBuilder();
+        builder.WithAzureChatCompletionService(deploymentName, endpoint, apiKey);
+        var kernel = builder.Build();
         chatGpt = kernel.GetService<IChatCompletion>();
 
         var systemMessage = @"You are an AI assistant that helps users answering their questions. Answer in a concise way. If you don't know the answer, don't try to guess, just say you don't know it.";

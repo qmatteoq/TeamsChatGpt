@@ -2,4 +2,4 @@
 If the mail includes any information about date and time, highlight them in bold using the <strong> tag. 
 Sign the mail as AI Assistant. Generate the output as HTML.
 
-Text: ```{{$text}}```
+Text: ```{{$input}}```

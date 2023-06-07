@@ -1,4 +1,4 @@
-﻿@page "/businessMail"
+﻿@page "/businessMailStarWars"
 
 @using BlazorChatGPT.Services;
 @inject IOpenAiService openAiService;
@@ -12,10 +12,10 @@
     <option value="azureopenai">Azure OpenAI</option>
 </InputSelect>
 
-<div>Type your message:</div>
+<div>Type the name of a Star Wars character:</div>
 <div><textarea rows="5" cols="100" @bind="@inputText" /></div>
 
-<button @onclick="() => GenerateBusinessMailAsync()">
+<button @onclick="() => GenerateBusinessMailStarWarsAsync()">
     Send
 </button>
 
@@ -35,7 +35,7 @@
     private string apiService;
     private bool isLoading;
 
-    public async Task GenerateBusinessMailAsync()
+    public async Task GenerateBusinessMailStarWarsAsync()
     {
         if (apiService == "openai")
         {
@@ -45,10 +45,10 @@
         {
             openAiService.UseAzureOpenAI();
         }
-
+        
         outputText = string.Empty;
         isLoading = true;
-        outputText = await openAiService.GenerateBusinessMailAsync(inputText);
+        outputText = await openAiService.GenerateStarWarsMail(inputText);
         isLoading = false;
     }
 }

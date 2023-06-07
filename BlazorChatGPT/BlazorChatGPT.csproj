@@ -8,9 +8,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Skills\SummarizeSkill\**" />
+    <Compile Remove="Skills\WriterSkill\**" />
+    <Content Remove="Skills\SummarizeSkill\**" />
+    <Content Remove="Skills\WriterSkill\**" />
+    <EmbeddedResource Remove="Skills\SummarizeSkill\**" />
+    <EmbeddedResource Remove="Skills\WriterSkill\**" />
+    <None Remove="Skills\SummarizeSkill\**" />
+    <None Remove="Skills\WriterSkill\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Skills\GeneratorSkill\MailGeneratorFunction\skprompt.txt" />
     <None Remove="Skills\GeneratorSkill\ReportGeneratorFunction\skprompt.txt" />
     <None Remove="Skills\GeneratorSkill\SessionGeneratorFunction\skprompt.txt" />
+    <None Remove="Skills\StarWarsSkill\StarWarsFunction\skprompt.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,10 +35,13 @@
     <Content Include="Skills\GeneratorSkill\SessionGeneratorFunction\skprompt.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Skills\StarWarsSkill\StarWarsFunction\skprompt.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SemanticKernel" Version="0.13.277.1-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="0.15.230531.5-preview" />
   </ItemGroup>
 
   <ItemGroup>
